@@ -1,4 +1,4 @@
-
+/* eslint-disable no-unused-vars */
 import styled from "styled-components";
 
 import Input from "../../ui/Input";
@@ -43,9 +43,9 @@ const Label = styled.label`
   font-weight: 500;
 `;
 
-
 function CreateCabinForm() {
-  const { register, handleSubmit, reset, getValues, formState } = useForm();
+  const { register,watch, handleSubmit, reset, getValues,  formState } =
+    useForm();
 
   const { errors } = formState;
 
@@ -64,12 +64,14 @@ function CreateCabinForm() {
   });
 
   function onSubmit(data) {
-    mutate(data);
+    mutate({...data, image: data.image[0]});
   }
 
   function onError(error) {
     console.log(error);
   }
+
+  const regularPrice = watch("regular_price");
 
   return (
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
@@ -123,8 +125,9 @@ function CreateCabinForm() {
           {...register("discount", {
             required: "This field is required",
             validate: (value) =>
-              value <= getValues().regular_price ||
-              "Discount should be less than regular price",
+              regularPrice && value <= regularPrice
+                ? true
+                : "Discount should be less than or equal to regular price",
           })}
         />
       </FormRow>
@@ -146,7 +149,13 @@ function CreateCabinForm() {
 
       <FormRow2>
         <Label htmlFor="image">Cabin photo</Label>
-        <FileInput id="image" accept="image/*" />
+        <FileInput
+          id="image"
+          accept="image/*"
+          {...register("image", {
+            required: "This field is required",
+          })}
+        />
       </FormRow2>
 
       <FormRow2>
