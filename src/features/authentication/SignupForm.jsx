@@ -3,17 +3,24 @@ import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
+import { useSignUp } from "./useSignUp";
+import SpinnerMini from "../../ui/SpinnerMini";
 
 // Email regex: /\S+@\S+\.\S+/
 
 function SignupForm() {
-  const { register, formState, getValues, handleSubmit } = useForm();
+  const { signUp, isPending } = useSignUp();
+  const { register, formState, reset, getValues, handleSubmit } = useForm();
 
   const { errors } = formState;
 
-  function onSubmit(data){
-    console.log(data);
-    
+  function onSubmit({ fullName, email, password }) {
+    signUp(
+      { fullName, email, password },
+      {
+        onSettled: reset,
+      }
+    );
   }
 
   return (
@@ -22,6 +29,7 @@ function SignupForm() {
         <Input
           type="text"
           id="fullName"
+          disabled={isPending}
           {...register("fullName", {
             required: "Ths field is required",
           })}
@@ -32,6 +40,7 @@ function SignupForm() {
         <Input
           type="email"
           id="email"
+          disabled={isPending}
           {...register("email", {
             required: "Ths field is required",
             pattern: {
@@ -49,6 +58,7 @@ function SignupForm() {
         <Input
           type="password"
           id="password"
+          disabled={isPending}
           {...register("password", {
             required: "Ths field is required",
             minLength: {
@@ -63,6 +73,7 @@ function SignupForm() {
         <Input
           type="password"
           id="passwordConfirm"
+          disabled={isPending}
           {...register("passwordConfirm", {
             required: "Ths field is required",
             validate: (value) =>
@@ -76,7 +87,7 @@ function SignupForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button>Create new user</Button>
+        <Button>{!isPending ? " Create new user" : <SpinnerMini />}</Button>
       </FormRow>
     </Form>
   );
