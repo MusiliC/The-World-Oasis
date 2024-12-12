@@ -58,7 +58,7 @@ export async function getBooking(id) {
 export async function getBookingsAfterDate(date) {
   const { data, error } = await supabase
     .from("bookings")
-    .select("created_at, totalPrice, extrasPrice")
+    .select("created_at, total_price, extras_price")
     .gte("created_at", date)
     .lte("created_at", getToday({ end: true }));
 
@@ -72,12 +72,12 @@ export async function getBookingsAfterDate(date) {
 
 // Returns all STAYS that are were created after the given date
 export async function getStaysAfterDate(date) {
+  
   const { data, error } = await supabase
     .from("bookings")
-    // .select('*')
-    .select("*, guests(full_name)")
-    .gte("startDate", date)
-    .lte("startDate", getToday());
+     .select("*, guests(full_name)")
+    .gte("start_date", date)
+    .lte("start_date", getToday());
 
   if (error) {
     console.error(error);
