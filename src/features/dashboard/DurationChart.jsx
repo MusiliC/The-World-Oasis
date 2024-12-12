@@ -144,9 +144,8 @@ function DurationChart({ confirmedStays }) {
 
   const data = prepareData(startData, confirmedStays) 
 
-  console.log(confirmedStays);
+  console.log(data);
   
-
   return (
     <ChartBox>
       <Heading as="h2">Stay Duration Summary</Heading>
@@ -154,8 +153,8 @@ function DurationChart({ confirmedStays }) {
       <ResponsiveContainer width={"100%"} height={240}>
         <PieChart>
           <Pie
-            data={data} 
-            name="duration"
+            data={data}
+            nameKey="duration"
             dataKey="value"
             innerRadius={85}
             outerRadius={110}
@@ -167,8 +166,23 @@ function DurationChart({ confirmedStays }) {
               <Cell key={i} fill={entry.color} stroke={entry.color} />
             ))}
           </Pie>
-          <Tooltip/>
-          <Legend verticalAlign="middle"  align="right" width="30%" layout="vertical" iconSize={15} iconType="circle"/>
+          <Tooltip />
+          <Legend
+            verticalAlign="middle"
+            align="right"
+            width="30%"
+            layout="vertical"
+            iconSize={15}
+            iconType="circle"
+          />
+          <Legend
+            verticalAlign="middle"
+            align="right"
+            width="30%"
+            layout="vertical"
+            iconSize={15}
+            iconType="circle"
+          />
         </PieChart>
       </ResponsiveContainer>
     </ChartBox>
