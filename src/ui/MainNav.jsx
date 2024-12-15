@@ -64,12 +64,16 @@ const MainNav = () => {
             <HiOutlineHomeModern />
             <span>Cabins</span>
           </StyledNavLink>
+          <StyledNavLink to="/guests">
+            <HiOutlineUsers />
+            <span>Guests</span>
+          </StyledNavLink>
           <StyledNavLink to="/users">
             <HiOutlineUsers />
             <span>Users</span>
           </StyledNavLink>
           <StyledNavLink to="/settings">
-            <HiOutlineCog6Tooth/>
+            <HiOutlineCog6Tooth />
             <span>Settings</span>
           </StyledNavLink>
         </li>

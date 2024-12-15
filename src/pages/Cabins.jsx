@@ -9,15 +9,15 @@ function Cabins() {
 
   return (
     <>
-    <Row type="horizontal">
-      <Heading as="h1">All cabins</Heading>
-      <CabinTableOperations/>
-    </Row>
+      <Row type="horizontal">
+        <Heading as="h1">All cabins</Heading>
+        <CabinTableOperations />
+      </Row>
 
-    <Row>
-      <CabinTable/>
-    <AddCabin/>
-    </Row>
+      <Row>
+        <AddCabin />
+        <CabinTable />
+      </Row>
     </>
   );
 }
