@@ -15,8 +15,6 @@ import Checkbox from "../../ui/Checkbox";
 import { formatCurrency } from "../../utils/helpers";
 import { useCheckIn } from "./useCheckIn";
 import { useSettings } from "../settings/useSettings";
-import { HiArrowUpOnSquare } from "react-icons/hi2";
-import { useCheckoutOut } from "./useCheckout";
 
 const Box = styled.div`
   /* Box */
@@ -31,7 +29,6 @@ function CheckinBooking() {
 
   const { checkin, isCheckingIn } = useCheckIn();
 
-    const { checkout, isCheckingOut } = useCheckoutOut();
 
   const { isPending, booking } = useBooking();
 

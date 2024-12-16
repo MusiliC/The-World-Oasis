@@ -4,7 +4,7 @@ import Table from "../../ui/Table";
 
 const Guest = styled.div`
   font-size: 1.6rem;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-grey-600);
   font-family: "Sono";
 `;
