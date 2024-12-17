@@ -11,11 +11,15 @@ import useGuests from "../guests/useGuests";
 import { useState } from "react";
 import { useEffect } from "react";
 import useGetSingleCabin from "../cabins/useGetSingleCabin";
+import { useSettings } from "../settings/useSettings";
+import { differenceInCalendarDays } from "date-fns";
 
 function CreateBookingForm() {
-  const { register, handleSubmit, reset, formState, setValue } = useForm();
+  const { register, handleSubmit, reset, watch, formState, setValue } =
+    useForm();
   const { isPending: isPendingCabins, cabins } = useGetCabin();
   const { isPending: isPendingGuests, guests } = useGuests();
+  const { settings} = useSettings();
 
   const [addBreakfast, setAddBreakfast] = useState(false);
   const [guest_id, setGuest_id] = useState("");
@@ -35,6 +39,31 @@ function CreateBookingForm() {
   const { isPending: isPendingCabinDetails, singleCabin } =
     useGetSingleCabin(cabin_id);
 
+
+  const numberGuests = watch("num_guests");
+
+  const startDate = watch("start_date");
+  const endDate = watch("end_date");
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const numberOfNights = Number(differenceInCalendarDays(end, start));
+
+  if (numberOfNights) {
+    setValue("num_nights", numberOfNights || 0);
+  }
+
+  const breakfastPrice = Number(settings?.breakfast_price);
+
+  const extraPriceWithBreakfast =
+    breakfastPrice * numberOfNights * numberGuests;
+
+  if (addBreakfast) {
+    setValue("extra_price", extraPriceWithBreakfast);
+  } else {
+    setValue("extra_price", 0);
+  }
+
   function handleSubmitBooking(data) {
     console.log(data);
     reset();
@@ -47,6 +76,15 @@ function CreateBookingForm() {
 
   if (singleCabin) {
     setValue("cabin_price", singleCabin?.regular_price || 0);
+
+    if (addBreakfast) {
+      const cabinPriceWithBreakfast =
+        extraPriceWithBreakfast + singleCabin?.regular_price;
+
+      setValue("total_price", cabinPriceWithBreakfast);
+    } else {
+      setValue("total_price", singleCabin?.regular_price);
+    }
   }
 
   return (
@@ -79,6 +117,7 @@ function CreateBookingForm() {
             <Input
               type="number"
               id="num_nights"
+              defaultValue={0}
               disabled
               {...register("num_nights", {
                 required: "This field is required",
@@ -162,7 +201,7 @@ function CreateBookingForm() {
           >
             <Input
               disabled
-              {...register("cabin_price", {
+              {...register("extra_price", {
                 required: "This field is required",
               })}
             />
@@ -171,7 +210,7 @@ function CreateBookingForm() {
           <FormRow label="Total price" error={errors?.num_nights?.message}>
             <Input
               disabled
-              {...register("cabin_price", {
+              {...register("total_price", {
                 required: "This field is required",
               })}
             />
