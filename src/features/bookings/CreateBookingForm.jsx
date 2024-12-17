@@ -71,6 +71,8 @@ function CreateBookingForm({ onCloseModal }) {
     const formData = {
       ...data,
       has_breakfast,
+      cabin_id,
+      guest_id,
       status: "unconfirmed",
       is_paid: false,
     };
@@ -126,6 +128,14 @@ function CreateBookingForm({ onCloseModal }) {
               //   disabled={isWorking}
               {...register("end_date", {
                 required: "This field is required",
+                validate: (value) => {
+                  const startDate = new Date(watch("start_date"));
+                  const endDate = new Date(value);
+                  return (
+                    (!isNaN(startDate) && endDate > startDate) ||
+                    "End date must be greater than start date"
+                  );
+                },
               })}
             />
           </FormRow>

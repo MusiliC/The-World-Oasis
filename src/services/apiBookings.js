@@ -52,7 +52,7 @@ export async function getBooking(id) {
 }
 
 export async function createBooking(newBooking) {
- 
+  
   const { data, error } = await supabase
     .from("bookings")
     .insert([{ ...newBooking }])
