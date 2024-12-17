@@ -1,4 +1,3 @@
-
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import { useGetCabin } from "./useGetCabin";
@@ -8,11 +7,11 @@ import { useSearchParams } from "react-router-dom";
 import Empty from "../../ui/Empty";
 
 const CabinTable = () => {
-const {isPending, cabins} = useGetCabin();
-const [searchParams] = useSearchParams()
+  const { isPending, cabins } = useGetCabin();
+  const [searchParams] = useSearchParams();
 
-  if(isPending) return <Spinner/>
-    if (!cabins.length) return <Empty resource="Cabins" />;
+  if (isPending) return <Spinner />;
+  if (!cabins.length) return <Empty resource="Cabins" />;
 
   // filter
 
@@ -20,18 +19,20 @@ const [searchParams] = useSearchParams()
 
   let filteredCabins;
 
-  if(filterValue === "all") filteredCabins = cabins;
-  if(filterValue === "no-discount") filteredCabins = cabins.filter((cabin) => cabin.discount === 0)
-  if(filterValue === "with-discount") filteredCabins = cabins.filter((cabin) => cabin.discount > 0)
- 
-    // sort
-    const sortBy = searchParams.get('sortBy') || "start_date_asc"
+  if (filterValue === "all") filteredCabins = cabins;
+  if (filterValue === "no-discount")
+    filteredCabins = cabins.filter((cabin) => cabin.discount === 0);
+  if (filterValue === "with-discount")
+    filteredCabins = cabins.filter((cabin) => cabin.discount > 0);
 
-    const [field, direction] = sortBy.split("-")
-    const modifier = direction === "asc" ? 1 : -1;
-    const sortedCabins = filteredCabins.sort(
-      (a, b) => (a[field] - b[field]) * modifier
-    ); 
+  // sort
+  const sortBy = searchParams.get("sortBy") || "start_date_asc";
+
+  const [field, direction] = sortBy.split("-");
+  const modifier = direction === "asc" ? 1 : -1;
+  const sortedCabins = filteredCabins.sort(
+    (a, b) => (a[field] - b[field]) * modifier
+  );
 
   return (
     <Menus>
@@ -52,6 +53,6 @@ const [searchParams] = useSearchParams()
       </Table>
     </Menus>
   );
-}
+};
 
-export default CabinTable
+export default CabinTable;
