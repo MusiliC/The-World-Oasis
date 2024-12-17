@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
@@ -13,15 +14,16 @@ import { useEffect } from "react";
 import useGetSingleCabin from "../cabins/useGetSingleCabin";
 import { useSettings } from "../settings/useSettings";
 import { differenceInCalendarDays } from "date-fns";
+import Button from "../../ui/Button";
 
-function CreateBookingForm() {
+function CreateBookingForm({ onCloseModal }) {
   const { register, handleSubmit, reset, watch, formState, setValue } =
     useForm();
   const { isPending: isPendingCabins, cabins } = useGetCabin();
   const { isPending: isPendingGuests, guests } = useGuests();
-  const { settings} = useSettings();
+  const { settings } = useSettings();
 
-  const [addBreakfast, setAddBreakfast] = useState(false);
+  const [has_breakfast, setHas_breakfast] = useState(false);
   const [guest_id, setGuest_id] = useState("");
   const [cabin_id, setCabin_id] = useState("");
   const [cabinDetails, setCabinDetails] = useState({});
@@ -38,7 +40,6 @@ function CreateBookingForm() {
 
   const { isPending: isPendingCabinDetails, singleCabin } =
     useGetSingleCabin(cabin_id);
-
 
   const numberGuests = watch("num_guests");
 
@@ -58,14 +59,20 @@ function CreateBookingForm() {
   const extraPriceWithBreakfast =
     breakfastPrice * numberOfNights * numberGuests;
 
-  if (addBreakfast) {
+  if (has_breakfast) {
     setValue("extra_price", extraPriceWithBreakfast);
   } else {
     setValue("extra_price", 0);
   }
 
   function handleSubmitBooking(data) {
-    console.log(data);
+    const formData = {
+      ...data,
+      has_breakfast,
+      status: "unconfirmed",
+      is_paid: false,
+    };
+    console.log(formData);
     reset();
   }
 
@@ -77,13 +84,13 @@ function CreateBookingForm() {
   if (singleCabin) {
     setValue("cabin_price", singleCabin?.regular_price || 0);
 
-    if (addBreakfast) {
+    if (has_breakfast) {
       const cabinPriceWithBreakfast =
         extraPriceWithBreakfast + singleCabin?.regular_price;
 
       setValue("total_price", cabinPriceWithBreakfast);
     } else {
-      setValue("total_price", singleCabin?.regular_price);
+      setValue("total_price", Number(singleCabin?.regular_price) || 0);
     }
   }
 
@@ -218,16 +225,27 @@ function CreateBookingForm() {
 
           <Checkbox
             id="has_breakfast"
-            // {...register("has_breakfast", {
-            //   required: "This field is required",
-            // })}
-            checked={addBreakfast}
-            onChange={() => setAddBreakfast((prev) => !prev)}
+            disabled={
+              !singleCabin?.regular_price || !numberGuests || !numberOfNights
+            }
+            checked={has_breakfast}
+            onChange={() => setHas_breakfast((prev) => !prev)}
           >
             Include breakfast?
           </Checkbox>
         </div>
       </Row>
+
+      <FormRow>
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+        >
+          Cancel
+        </Button>
+        <Button> Create new Booking</Button>
+      </FormRow>
     </Form>
   );
 }
