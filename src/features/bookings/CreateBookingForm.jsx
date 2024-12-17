@@ -15,12 +15,14 @@ import useGetSingleCabin from "../cabins/useGetSingleCabin";
 import { useSettings } from "../settings/useSettings";
 import { differenceInCalendarDays } from "date-fns";
 import Button from "../../ui/Button";
+import useCreateBooking from "./useCreateBooking";
 
 function CreateBookingForm({ onCloseModal }) {
   const { register, handleSubmit, reset, watch, formState, setValue } =
     useForm();
   const { isPending: isPendingCabins, cabins } = useGetCabin();
   const { isPending: isPendingGuests, guests } = useGuests();
+  const { isCreating, createBooking } = useCreateBooking();
   const { settings } = useSettings();
 
   const [has_breakfast, setHas_breakfast] = useState(false);
@@ -60,9 +62,9 @@ function CreateBookingForm({ onCloseModal }) {
     breakfastPrice * numberOfNights * numberGuests;
 
   if (has_breakfast) {
-    setValue("extra_price", extraPriceWithBreakfast);
+    setValue("extras_price", extraPriceWithBreakfast);
   } else {
-    setValue("extra_price", 0);
+    setValue("extras_price", 0);
   }
 
   function handleSubmitBooking(data) {
@@ -72,7 +74,15 @@ function CreateBookingForm({ onCloseModal }) {
       status: "unconfirmed",
       is_paid: false,
     };
-    console.log(formData);
+    createBooking(
+      formData ,
+      {
+        onSuccess: () => {
+          reset();
+          () => onCloseModal?.();
+        },
+      }
+    );
     reset();
   }
 
@@ -208,7 +218,7 @@ function CreateBookingForm({ onCloseModal }) {
           >
             <Input
               disabled
-              {...register("extra_price", {
+              {...register("extras_price", {
                 required: "This field is required",
               })}
             />
@@ -240,11 +250,12 @@ function CreateBookingForm({ onCloseModal }) {
         <Button
           variation="secondary"
           type="reset"
+          disabled={isCreating}
           onClick={() => onCloseModal?.()}
         >
           Cancel
         </Button>
-        <Button> Create new Booking</Button>
+        <Button>{isCreating ? "Creating.." : "  Create new Booking"}</Button>
       </FormRow>
     </Form>
   );
