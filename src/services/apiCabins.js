@@ -10,8 +10,22 @@ export async function getCabins() {
   return data;
 }
 
+export async function getSingleCabin(id) {
+  const { data, error } = await supabase
+    .from("cabins")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error(error);
+    throw new Error("Cabin not found");
+  }
+
+  return data;
+}
+
 export async function createEditCabin(newCabin, id) {
-  console.log(newCabin);
   
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
 

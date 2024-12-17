@@ -9,27 +9,48 @@ import { useGetCabin } from "../cabins/useGetCabin";
 import SpinnerMini from "../../ui/SpinnerMini";
 import useGuests from "../guests/useGuests";
 import { useState } from "react";
+import { useEffect } from "react";
+import useGetSingleCabin from "../cabins/useGetSingleCabin";
 
 function CreateBookingForm() {
-  const { register, handleSubmit, reset, formState } = useForm();
+  const { register, handleSubmit, reset, formState, setValue } = useForm();
   const { isPending: isPendingCabins, cabins } = useGetCabin();
   const { isPending: isPendingGuests, guests } = useGuests();
 
-  console.log(cabins);
-  
-
   const [addBreakfast, setAddBreakfast] = useState(false);
+  const [guest_id, setGuest_id] = useState("");
+  const [cabin_id, setCabin_id] = useState("");
+  const [cabinDetails, setCabinDetails] = useState({});
 
   const { errors } = formState;
+
+  const handleGuestChange = (e) => {
+    setGuest_id(e.target.value);
+  };
+
+  const handleCabinChange = (e) => {
+    setCabin_id(e.target.value);
+  };
+
+  const { isPending: isPendingCabinDetails, singleCabin } =
+    useGetSingleCabin(cabin_id);
 
   function handleSubmitBooking(data) {
     console.log(data);
     reset();
   }
 
+  useEffect(() => {
+    if (!cabin_id) return;
+    setCabinDetails(singleCabin);
+  }, [cabin_id, singleCabin]);
+
+  if (singleCabin) {
+    setValue("cabin_price", singleCabin?.regular_price || 0);
+  }
 
   return (
-    <Form onSubmit={handleSubmitBooking(handleSubmit)}>
+    <Form onSubmit={handleSubmit(handleSubmitBooking)}>
       <Row type="horizontal">
         <div>
           <FormRow label="Start date" error={errors?.start_date?.message}>
@@ -91,74 +112,48 @@ function CreateBookingForm() {
           </FormRow>
         </div>
         <div>
-          {/* <FormRow label="Select guest" error={errors?.start_date?.message}>
+          <FormRow label="Select guest" error={errors?.start_date?.message}>
             {isPendingGuests ? (
               <SpinnerMini />
             ) : (
-              // <Select
-              //   options={guests}
-              //   value="id"
-              //   getOptionLabel={(option) => option.full_name}
-              //   {...register("guest_id", {
-              //     required: {
-              //       value: true,
-              //       message: "Guest is required",
-              //     },
-              //     onChange: (e) => {
-              //       console.log("React Hook Form onChange", e.target.value);
-              //     },
-              //   })}
-              // />
-              <select name="" id=""></select>
+              <Select
+                options={guests}
+                getOptionLabel={(option) => option.full_name}
+                getOptionValue={(option) => option.id}
+                placeholder={"Select a guest"}
+                type="white"
+                value={guest_id}
+                onChange={handleGuestChange}
+              />
             )}
-          </FormRow> */}
-          {/* <FormRow label="Select cabin" error={errors?.start_date?.message}>
+          </FormRow>
+          <FormRow label="Select cabin" error={errors?.start_date?.message}>
             {isPendingCabins ? (
               <SpinnerMini />
             ) : (
-              // <Select
-              //   options={cabins}
-              //   value="id"
-              //   getOptionLabel={(option) => option.name}
-              //   {...register("cabin_id", {
-              //     required: {
-              //       value: true,
-              //       message: "Cabin is required",
-              //     },
-              //     onChange: (e) => {
-              //       console.log("React Hook Form onChange", e.target.value);
-              //     },
-              //   })}
-              // />
-
-              <select
-                name="homeTeam"
-                className="form-select"
-                id=""
-                {...register("homeTeam", {
-                  required: {
-                    value: true,
-                    message: "Home team is required",
-                  },
-                })}
-              >
-             
-
-                {cabins.map((cabin) => (
-                  <option key={cabin.id} value={cabin._d}>
-                    {cabin.name}
-                  </option>
-                ))}
-              </select>
+              <Select
+                options={cabins}
+                getOptionLabel={(option) => option.name}
+                getOptionValue={(option) => option.id}
+                placeholder={"Select a cabin"}
+                type="white"
+                value={cabin_id}
+                onChange={handleCabinChange}
+              />
             )}
-          </FormRow> */}
+          </FormRow>
           <FormRow label="Cabin price" error={errors?.num_nights?.message}>
-            <Input
-              disabled
-              {...register("cabin_price", {
-                required: "This field is required",
-              })}
-            />
+            {isPendingCabinDetails ? (
+              <SpinnerMini />
+            ) : (
+              <Input
+                type="number"
+                disabled
+                {...register("cabin_price", {
+                  required: "This field is required",
+                })}
+              />
+            )}
           </FormRow>
 
           <FormRow
@@ -188,7 +183,7 @@ function CreateBookingForm() {
             //   required: "This field is required",
             // })}
             checked={addBreakfast}
-            onChange={() => addBreakfast((breakfast) => !breakfast)}
+            onChange={() => setAddBreakfast((prev) => !prev)}
           >
             Include breakfast?
           </Checkbox>
