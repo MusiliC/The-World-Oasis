@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import styled from "styled-components";
+import Uploader from "../data/Uploader";
 
 const Main = styled.main`
   background-color: var(--color-grey-50);
@@ -33,7 +34,7 @@ const AppLayout = () => {
       <Sidebar />
       <Main>
         <Container>
-        <Outlet />
+        <Outlet />      
         </Container>
       </Main>
     </StyledAppLayout>
